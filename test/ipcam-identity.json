@@ -1,0 +1,18 @@
+{
+  "address": "test/ipcam/$identity",
+  "public": {
+   "domain": "test",
+   "issuerName": "ipcam",
+   "location": "local",
+   "organization": "",
+   "publicKey": "-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEtTsJhx15aIx/Xw+/7lDcr1apcKHK\n5AukuNpuYs0Ov5KXklgvTIlvA+GL/2RTAmMtGAetHlEjsiARD1vcKQrjXQ==\n-----END PUBLIC KEY-----\n",
+   "publisherId": "ipcam",
+   "timestamp": "2020-06-19T22:38:26.765-0700",
+   "validUntil": "2021-06-19T22:38:26.765-0700"
+  },
+  "signature": "26-YRe_d0WDJZcvQXaDg6NSW1EcUQnz4mHaMEhRSQQENI9tDlrvunsj9STHt-aOszc2BxLfA91wbdFlKF4dM4g==",
+  "signer": "ipcam",
+  "timestamp": "2020-06-19T22:38:26.765-0700",
+  "privateKey": "-----BEGIN PRIVATE KEY-----\nMHcCAQEEIHp8rK0R1oGclX3o3ahBFtohROyaH0qgyd3w25DgMkqYoAoGCCqGSM49\nAwEHoUQDQgAEtTsJhx15aIx/Xw+/7lDcr1apcKHK5AukuNpuYs0Ov5KXklgvTIlv\nA+GL/2RTAmMtGAetHlEjsiARD1vcKQrjXQ==\n-----END PRIVATE KEY-----\n",
+  "sender": ""
+ }

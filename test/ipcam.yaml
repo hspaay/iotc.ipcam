@@ -1,0 +1,21 @@
+# Publisher configuration options
+# Optional parameters are commented out and shown with their default value
+
+publisherId: "ipcam2"
+
+# Quick setup of cameras
+# Use the node configuration to configure further or add more cameras
+cameras:
+  LaSilla: 
+    url: "http://www.ls.eso.org/lasilla/dimm/lasc/gifs/last.gif"
+    pollInterval: 654
+    description: "ESO La Silla Sky Camera"
+  Kelowna:
+    url: "http://images.drivebc.ca/bchighwaycam/pub/cameras/127.jpg"
+    pollInterval: 600
+    description: "Kelowna Bennet Bridge"
+  Snowshed-east:
+    url:  "http://images.drivebc.ca/bchighwaycam/pub/cameras/2.jpg"
+    pollInterval: 600
+    description: "Coquahalla Highway 5 Snowshed"
+
