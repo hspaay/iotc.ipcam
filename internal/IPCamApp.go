@@ -31,8 +31,7 @@ type IPCamApp struct {
 	pollDelay map[string]int // seconds until next poll for each camera
 }
 
-// CreateCamerasFromConfig loads cameras from config and ensures the camera node has output and proper defaults
-// Existing cameras will remain in place
+// CreateCamerasFromConfig loads cameras from config and add outputs for image and latency.
 func (ipcam *IPCamApp) CreateCamerasFromConfig(config *IPCamConfig) {
 	pub := ipcam.pub
 	ipcam.logger.Infof("Loading %d cameras from config", len(config.Cameras))
@@ -40,24 +39,27 @@ func (ipcam *IPCamApp) CreateCamerasFromConfig(config *IPCamConfig) {
 	for camID, camInfo := range config.Cameras {
 		// node := pub.GetNodeByID(camID)
 		// if node == nil {
-		camAddr := pub.NewNode(camID, iotc.NodeTypeCamera)
+		pub.NewNode(camID, iotc.NodeTypeCamera)
 		pub.SetNodeAttr(camID, iotc.NodeAttrMap{iotc.NodeAttrDescription: camInfo.Description})
 
-		pub.NewNodeConfig(camID, iotc.NodeAttrURL, iotc.DataTypeString,
-			"Camera URL", camInfo.URL)
-		pub.Nodes.UpdateNodeConfig(camAddr, iotc.NodeAttrLoginName, &iotc.ConfigAttr{
-			Datatype:    iotc.DataTypeString,
+		pub.UpdateNodeConfig(camID, iotc.NodeAttrURL, &iotc.ConfigAttr{
+			DataType:    iotc.DataTypeString,
+			Description: "Camera URL, for example http://images.drivebc.ca/bchighwaycam/pub/cameras/2.jpg",
+			Default:     camInfo.URL,
+		})
+		pub.UpdateNodeConfig(camID, iotc.NodeAttrLoginName, &iotc.ConfigAttr{
+			DataType:    iotc.DataTypeString,
 			Description: "Camera login name",
 			Secret:      true, // don't include value in discovery publication
 		})
-		pub.Nodes.UpdateNodeConfig(camAddr, iotc.NodeAttrPassword, &iotc.ConfigAttr{
-			Datatype:    iotc.DataTypeString,
+		pub.UpdateNodeConfig(camID, iotc.NodeAttrPassword, &iotc.ConfigAttr{
+			DataType:    iotc.DataTypeString,
 			Description: "Camera password",
 			Secret:      true, // don't include value in discovery publication
 		})
 		// each camera has its own poll interval
-		pub.Nodes.UpdateNodeConfig(camAddr, iotc.NodeAttrPollInterval, &iotc.ConfigAttr{
-			Datatype:    iotc.DataTypeInt,
+		pub.UpdateNodeConfig(camID, iotc.NodeAttrPollInterval, &iotc.ConfigAttr{
+			DataType:    iotc.DataTypeInt,
 			Description: "Camera poll interval in seconds",
 			Default:     strconv.Itoa(camInfo.PollInterval),
 			Min:         5,
