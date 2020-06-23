@@ -1,4 +1,4 @@
-module iotd.ipcam
+module ipcam
 
 go 1.13
 
