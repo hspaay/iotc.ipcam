@@ -1,6 +1,6 @@
 package main
 
-import "iotc.ipcam/internal"
+import "iotd.ipcam/internal"
 
 func main() {
 	internal.Run()

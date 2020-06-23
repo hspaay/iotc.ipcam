@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/hspaay/iotc.golang/iotc"
-	"github.com/hspaay/iotc.golang/publisher"
+	"github.com/iotdomain/iotdomain-go/publisher"
+	"github.com/iotdomain/iotdomain-go/types"
 )
 
 // readCameraImage returns the image downloaded from the URL and the duration to download it.
@@ -66,13 +66,13 @@ func (ipcam *IPCamApp) saveImage(filePath string, image []byte) error {
 // If the camera device doesn't have an image output it is added.
 // If a filename property is configured then save the camera image to the file
 // Images are publised as a binary array and are unsigned
-func (ipcam *IPCamApp) PollCamera(camera *iotc.NodeDiscoveryMessage) ([]byte, error) {
+func (ipcam *IPCamApp) PollCamera(camera *types.NodeDiscoveryMessage) ([]byte, error) {
 	var err error
 	cameras := ipcam.pub.Nodes
 	camAddr := camera.Address
-	url, _ := cameras.GetNodeConfigString(camAddr, iotc.NodeAttrURL, "")
-	loginName, _ := cameras.GetNodeConfigString(camAddr, iotc.NodeAttrLoginName, "")
-	password, _ := cameras.GetNodeConfigString(camAddr, iotc.NodeAttrPassword, "")
+	url, _ := cameras.GetNodeConfigString(camAddr, types.NodeAttrURL, "")
+	loginName, _ := cameras.GetNodeConfigString(camAddr, types.NodeAttrLoginName, "")
+	password, _ := cameras.GetNodeConfigString(camAddr, types.NodeAttrPassword, "")
 	ipcam.logger.Infof("pollCamera: Polling Camera %s image from %s", camera.NodeID, url)
 
 	image, latency, err := ipcam.readImage(url, loginName, password)
@@ -80,26 +80,26 @@ func (ipcam *IPCamApp) PollCamera(camera *iotc.NodeDiscoveryMessage) ([]byte, er
 
 	if image != nil {
 		//latency3 := math.Round(latency.Seconds()*1000)/1000
-		cameras.SetNodeStatus(camAddr, iotc.NodeStatusMap{iotc.NodeStatusLatencyMSec: latencyStr})
-		ipcam.pub.UpdateOutputValue(camera.NodeID, iotc.OutputTypeLatency, iotc.DefaultOutputInstance, latencyStr)
+		cameras.SetNodeStatus(camAddr, types.NodeStatusMap{types.NodeStatusLatencyMSec: latencyStr})
+		ipcam.pub.UpdateOutputValue(camera.NodeID, types.OutputTypeLatency, types.DefaultOutputInstance, latencyStr)
 
 		// if a filename attribute is defined, save the image to the file
 		// this is a bit of an oddball as this is for local use only, yet a published attribute?
-		filename := cameras.GetNodeAttr(camAddr, iotc.NodeAttrFilename)
+		filename := cameras.GetNodeAttr(camAddr, types.NodeAttrFilename)
 		if filename != "" {
 			err = ipcam.saveImage(filename, image)
 		}
 		//
-		output := ipcam.pub.GetOutputByType(camera.NodeID, iotc.OutputTypeImage, iotc.DefaultOutputInstance)
+		output := ipcam.pub.GetOutputByType(camera.NodeID, types.OutputTypeImage, types.DefaultOutputInstance)
 		// Dont store the image in memory as it consumes memory unnecesary
 		// Don't sign so the image is directly usable by 3rd party (todo: add signing as config)
 		ipcam.pub.PublishRaw(output, false, image)
 
-		ipcam.pub.SetNodeErrorStatus(camera.NodeID, iotc.NodeRunStateReady, "")
+		ipcam.pub.SetNodeErrorStatus(camera.NodeID, types.NodeRunStateReady, "")
 	} else {
 		// failed to get image from camera
 		msg := fmt.Sprintf("Unable to get image from camera %s: %s", camera.NodeID, err)
-		ipcam.pub.SetNodeErrorStatus(camera.NodeID, iotc.NodeRunStateError, msg)
+		ipcam.pub.SetNodeErrorStatus(camera.NodeID, types.NodeRunStateError, msg)
 		err = errors.New(msg)
 	}
 	return image, err
@@ -114,7 +114,7 @@ func (ipcam *IPCamApp) Poll(pub *publisher.Publisher) {
 		// Each camera can have its own poll interval. The fallback value is the ipcam poll interval
 		pollDelay, _ := ipcam.pollDelay[camera.Address]
 		if pollDelay <= 0 {
-			pollInterval, _ := cameraList.GetNodeConfigInt(camera.Address, iotc.NodeAttrPollInterval, 600)
+			pollInterval, _ := cameraList.GetNodeConfigInt(camera.Address, types.NodeAttrPollInterval, 600)
 			pollDelay = pollInterval
 			ipcam.logger.Debugf("pollLoop: Polling camera %s at interval of %d seconds", camera.NodeID, pollInterval)
 			go ipcam.PollCamera(camera)

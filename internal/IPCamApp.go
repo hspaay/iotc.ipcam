@@ -5,8 +5,8 @@ package internal
 import (
 	"strconv"
 
-	"github.com/hspaay/iotc.golang/iotc"
-	"github.com/hspaay/iotc.golang/publisher"
+	"github.com/iotdomain/iotdomain-go/publisher"
+	"github.com/iotdomain/iotdomain-go/types"
 	"github.com/sirupsen/logrus"
 )
 
@@ -39,35 +39,35 @@ func (ipcam *IPCamApp) CreateCamerasFromConfig(config *IPCamConfig) {
 	for camID, camInfo := range config.Cameras {
 		// node := pub.GetNodeByID(camID)
 		// if node == nil {
-		pub.NewNode(camID, iotc.NodeTypeCamera)
-		pub.SetNodeAttr(camID, iotc.NodeAttrMap{iotc.NodeAttrDescription: camInfo.Description})
+		pub.NewNode(camID, types.NodeTypeCamera)
+		pub.SetNodeAttr(camID, types.NodeAttrMap{types.NodeAttrDescription: camInfo.Description})
 
-		pub.UpdateNodeConfig(camID, iotc.NodeAttrURL, &iotc.ConfigAttr{
-			DataType:    iotc.DataTypeString,
+		pub.UpdateNodeConfig(camID, types.NodeAttrURL, &types.ConfigAttr{
+			DataType:    types.DataTypeString,
 			Description: "Camera URL, for example http://images.drivebc.ca/bchighwaycam/pub/cameras/2.jpg",
 			Default:     camInfo.URL,
 		})
-		pub.UpdateNodeConfig(camID, iotc.NodeAttrLoginName, &iotc.ConfigAttr{
-			DataType:    iotc.DataTypeString,
+		pub.UpdateNodeConfig(camID, types.NodeAttrLoginName, &types.ConfigAttr{
+			DataType:    types.DataTypeString,
 			Description: "Camera login name",
 			Secret:      true, // don't include value in discovery publication
 		})
-		pub.UpdateNodeConfig(camID, iotc.NodeAttrPassword, &iotc.ConfigAttr{
-			DataType:    iotc.DataTypeString,
+		pub.UpdateNodeConfig(camID, types.NodeAttrPassword, &types.ConfigAttr{
+			DataType:    types.DataTypeString,
 			Description: "Camera password",
 			Secret:      true, // don't include value in discovery publication
 		})
 		// each camera has its own poll interval
-		pub.UpdateNodeConfig(camID, iotc.NodeAttrPollInterval, &iotc.ConfigAttr{
-			DataType:    iotc.DataTypeInt,
+		pub.UpdateNodeConfig(camID, types.NodeAttrPollInterval, &types.ConfigAttr{
+			DataType:    types.DataTypeInt,
 			Description: "Camera poll interval in seconds",
 			Default:     strconv.Itoa(camInfo.PollInterval),
 			Min:         5,
 			Max:         3600,
 		})
 		// the image and camera latency are both outputs
-		pub.NewOutput(camID, iotc.OutputTypeImage, iotc.DefaultOutputInstance)
-		pub.NewOutput(camID, iotc.OutputTypeLatency, iotc.DefaultOutputInstance)
+		pub.NewOutput(camID, types.OutputTypeImage, types.DefaultOutputInstance)
+		pub.NewOutput(camID, types.OutputTypeLatency, types.DefaultOutputInstance)
 	}
 
 }

@@ -4,8 +4,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hspaay/iotc.golang/iotc"
-	"github.com/hspaay/iotc.golang/publisher"
+	"github.com/iotdomain/iotdomain-go/publisher"
+	"github.com/iotdomain/iotdomain-go/types"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -27,9 +27,9 @@ func TestLoadConfig(t *testing.T) {
 	// the snowshed camera has an output with image sensor configured
 	camera := pub.GetNodeByID(cam1Id)
 	if assert.NotNil(t, camera) { // camera node has to exist
-		assert.Equal(t, "snowshed-east", camera.NodeID, "Incorrect name for camera")
+		assert.Equal(t, cam1Id, camera.NodeID, "Incorrect name for camera")
 	}
-	output := pub.GetOutputByType(cam1Id, iotc.OutputTypeImage, iotc.DefaultOutputInstance)
+	output := pub.GetOutputByType(cam1Id, types.OutputTypeImage, types.DefaultOutputInstance)
 	assert.NotNil(t, output, "Missing output for camera image")
 }
 
@@ -38,9 +38,9 @@ func TestReadCamera(t *testing.T) {
 	pub, _ := publisher.NewAppPublisher(AppID, configFolder, cacheFolder, appConfig, false)
 	ipcam := NewIPCamApp(appConfig, pub)
 
-	camURL, _ := pub.GetNodeConfigString(cam1Id, iotc.NodeAttrURL, "") //
-	loginName, _ := pub.GetNodeConfigString(cam1Id, iotc.NodeAttrLoginName, "")
-	password, _ := pub.GetNodeConfigString(cam1Id, iotc.NodeAttrPassword, "")
+	camURL, _ := pub.GetNodeConfigString(cam1Id, types.NodeAttrURL, "") //
+	loginName, _ := pub.GetNodeConfigString(cam1Id, types.NodeAttrLoginName, "")
+	password, _ := pub.GetNodeConfigString(cam1Id, types.NodeAttrPassword, "")
 	image, duration, err := ipcam.readImage(camURL, loginName, password)
 	assert.NoError(t, err)
 	assert.NotNil(t, image)
@@ -64,14 +64,14 @@ func TestPollCamera(t *testing.T) {
 
 	// after polling the camera, its latency attribute must have been updated
 	latencyValue := pub.OutputValues.GetOutputValueByType(
-		camera, iotc.OutputTypeLatency, iotc.DefaultOutputInstance)
+		camera, types.OutputTypeLatency, types.DefaultOutputInstance)
 	if assert.NotNil(t, latencyValue, "No output value for latency on node %s", camera.Address) {
 		assert.NotZero(t, latencyValue.Value, "No latency in polling camera")
 	}
 
-	output := pub.GetOutputByType(cam1Id, iotc.OutputTypeImage, iotc.DefaultOutputInstance)
+	output := pub.GetOutputByType(cam1Id, types.OutputTypeImage, types.DefaultOutputInstance)
 	assert.NotNil(t, output) // camera node has to exist
-	assert.Equal(t, iotc.OutputTypeImage, output.OutputType, "Incorrect camera output type")
+	assert.Equal(t, types.OutputTypeImage, output.OutputType, "Incorrect camera output type")
 
 	// TODO listen for topic
 	pub.Stop()
@@ -85,19 +85,19 @@ func TestConfigPollRate(t *testing.T) {
 
 	cam1 := pub.GetNodeByID(cam1Id)
 	pub.Nodes.SetNodeConfigValues(cam1.Address,
-		iotc.NodeAttrMap{iotc.NodeAttrPollInterval: "654"},
+		types.NodeAttrMap{types.NodeAttrPollInterval: "654"},
 	)
 
-	pollInterval, err := pub.GetNodeConfigInt(cam1Id, iotc.NodeAttrPollInterval, 612)
+	pollInterval, err := pub.GetNodeConfigInt(cam1Id, types.NodeAttrPollInterval, 612)
 	assert.NoErrorf(t, err, "Poll interval config not found")
 	assert.Equal(t, 654, pollInterval)
 	time.Sleep(1 * time.Second)
 
 	pub.Nodes.SetNodeConfigValues(cam1.Address,
-		iotc.NodeAttrMap{iotc.NodeAttrPollInterval: "33"},
+		types.NodeAttrMap{types.NodeAttrPollInterval: "33"},
 	)
 	time.Sleep(1 * time.Second)
-	pollInterval2, _ := pub.GetNodeConfigInt(cam1Id, iotc.NodeAttrPollInterval, 600)
+	pollInterval2, _ := pub.GetNodeConfigInt(cam1Id, types.NodeAttrPollInterval, 600)
 	assert.Equal(t, 33, pollInterval2)
 
 	pub.Stop()
