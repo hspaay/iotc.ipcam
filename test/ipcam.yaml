@@ -2,6 +2,7 @@
 # Optional parameters are commented out and shown with their default value
 
 publisherId: "ipcam2"
+imageFolder: "../test"
 
 # Quick setup of cameras
 # Use the node configuration to configure further or add more cameras
@@ -9,13 +10,23 @@ cameras:
   LaSilla: 
     url: "http://www.ls.eso.org/lasilla/dimm/lasc/gifs/last.gif"
     pollInterval: 654
+    filename: "lasilla-snapshot.jpg"
     description: "ESO La Silla Sky Camera"
+    overlay:
+      text: "La Silla"
+      x: 5      # from left
+      y: -20    # from bottom
+      size: 14  # font size
   Kelowna:
     url: "http://images.drivebc.ca/bchighwaycam/pub/cameras/127.jpg"
+    filename: "kelowna-snapshot.jpg"
     pollInterval: 600
     description: "Kelowna Bennet Bridge"
   Snowshed-east:
     url:  "http://images.drivebc.ca/bchighwaycam/pub/cameras/2.jpg"
     pollInterval: 600
     description: "Coquahalla Highway 5 Snowshed"
+    # for testing auth that fails
+    loginName: "test"
+    password: "test"
 

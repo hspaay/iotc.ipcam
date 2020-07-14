@@ -16,10 +16,20 @@ const AppID = "ipcam"
 // IPCamConfig with application state, loaded from ipcam.yaml
 type IPCamConfig struct {
 	PublisherID string `yaml:"publisherId"` // default publisher is app ID
+	ImageFolder string `yaml:"imageFolder"` // location to save images
 	Cameras     map[string]struct {
-		URL          string `yaml:"url"`
-		PollInterval int    `yaml:"pollInterval"`
-		Description  string `yaml:"description"`
+		URL          string `yaml:"url"`          // IP camera URL
+		PollInterval int    `yaml:"pollInterval"` // how often to poll the camera
+		Description  string `yaml:"description"`  // Description of the camera
+		Filename     string `yaml:"filename"`     // Locally save image from the camera
+		LoginName    string `yaml:"loginName"`
+		Password     string `yaml:"password"`
+		Overlay      struct {
+			Text string `yaml:"text"` // text to overlay
+			X    int    `yaml:"x"`    // from left
+			Y    int    `yaml:"y"`    // from bottom
+			Size int    `yaml:"size"` // font size in pt
+		} `yaml:"overlay"`
 	} `yaml:"cameras"`
 }
 
@@ -27,20 +37,22 @@ type IPCamConfig struct {
 type IPCamApp struct {
 	config    *IPCamConfig
 	pub       *publisher.Publisher
-	logger    *logrus.Logger
 	pollDelay map[string]int // seconds until next poll for each camera
 }
 
 // CreateCamerasFromConfig loads cameras from config and add outputs for image and latency.
 func (ipcam *IPCamApp) CreateCamerasFromConfig(config *IPCamConfig) {
 	pub := ipcam.pub
-	ipcam.logger.Infof("Loading %d cameras from config", len(config.Cameras))
+	logrus.Infof("Loading %d cameras from config", len(config.Cameras))
 
 	for camID, camInfo := range config.Cameras {
 		// node := pub.GetNodeByID(camID)
 		// if node == nil {
 		pub.NewNode(camID, types.NodeTypeCamera)
-		pub.SetNodeAttr(camID, types.NodeAttrMap{types.NodeAttrDescription: camInfo.Description})
+		pub.UpdateNodeAttr(camID, types.NodeAttrMap{
+			types.NodeAttrDescription: camInfo.Description,
+			types.NodeAttrFilename:    camInfo.Filename,
+		})
 
 		pub.UpdateNodeConfig(camID, types.NodeAttrURL, &types.ConfigAttr{
 			DataType:    types.DataTypeString,
@@ -50,11 +62,13 @@ func (ipcam *IPCamApp) CreateCamerasFromConfig(config *IPCamConfig) {
 		pub.UpdateNodeConfig(camID, types.NodeAttrLoginName, &types.ConfigAttr{
 			DataType:    types.DataTypeString,
 			Description: "Camera login name",
+			Default:     camInfo.LoginName,
 			Secret:      true, // don't include value in discovery publication
 		})
 		pub.UpdateNodeConfig(camID, types.NodeAttrPassword, &types.ConfigAttr{
 			DataType:    types.DataTypeString,
 			Description: "Camera password",
+			Default:     camInfo.Password,
 			Secret:      true, // don't include value in discovery publication
 		})
 		// each camera has its own poll interval
@@ -77,7 +91,6 @@ func NewIPCamApp(config *IPCamConfig, pub *publisher.Publisher) *IPCamApp {
 	app := IPCamApp{
 		config:    config,
 		pub:       pub,
-		logger:    logrus.New(),
 		pollDelay: make(map[string]int),
 	}
 	if app.config.PublisherID == "" {

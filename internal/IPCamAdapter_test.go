@@ -1,12 +1,14 @@
 package internal
 
 import (
+	"os"
 	"testing"
 	"time"
 
 	"github.com/iotdomain/iotdomain-go/publisher"
 	"github.com/iotdomain/iotdomain-go/types"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 const cacheFolder = "../test/cache"
@@ -16,6 +18,7 @@ const configFolder = "../test"
 const cam1Id = "Snowshed-east"
 const cam2Id = "LaSilla"
 const cam3Id = "Kelowna"
+const cam3File = "../test/kelowna-snapshot.jpg"
 
 var appConfig *IPCamConfig = &IPCamConfig{}
 
@@ -26,11 +29,11 @@ func TestLoadConfig(t *testing.T) {
 
 	// the snowshed camera has an output with image sensor configured
 	camera := pub.GetNodeByID(cam1Id)
-	if assert.NotNil(t, camera) { // camera node has to exist
-		assert.Equal(t, cam1Id, camera.NodeID, "Incorrect name for camera")
-	}
-	output := pub.GetOutputByType(cam1Id, types.OutputTypeImage, types.DefaultOutputInstance)
-	assert.NotNil(t, output, "Missing output for camera image")
+	require.NotNil(t, camera)
+	assert.Equal(t, cam1Id, camera.NodeID, "Incorrect name for camera")
+
+	output := pub.GetOutput(cam1Id, types.OutputTypeImage, types.DefaultOutputInstance)
+	require.NotNil(t, output, "Missing output for camera image")
 }
 
 // TestReadCamera test reading camera image from remote location
@@ -53,6 +56,7 @@ func TestPollCamera(t *testing.T) {
 	assert.NoError(t, err, "Failed to create ipcam publisher")
 	ipcam := NewIPCamApp(appConfig, pub)
 
+	os.Remove(cam3File)
 	pub.Start()
 
 	camera := pub.GetNodeByID(cam1Id)
@@ -63,17 +67,19 @@ func TestPollCamera(t *testing.T) {
 	assert.NoError(t, err)
 
 	// after polling the camera, its latency attribute must have been updated
-	latencyValue := pub.OutputValues.GetOutputValueByType(
-		camera, types.OutputTypeLatency, types.DefaultOutputInstance)
+	latencyValue := pub.GetOutputValue(
+		camera.NodeID, types.OutputTypeLatency, types.DefaultOutputInstance)
 	if assert.NotNil(t, latencyValue, "No output value for latency on node %s", camera.Address) {
 		assert.NotZero(t, latencyValue.Value, "No latency in polling camera")
 	}
 
-	output := pub.GetOutputByType(cam1Id, types.OutputTypeImage, types.DefaultOutputInstance)
+	output := pub.GetOutput(cam1Id, types.OutputTypeImage, types.DefaultOutputInstance)
 	assert.NotNil(t, output) // camera node has to exist
 	assert.Equal(t, types.OutputTypeImage, output.OutputType, "Incorrect camera output type")
 
-	// TODO listen for topic
+	assert.FileExists(t, cam3File, "Image not save to file %s", cam3File)
+
+	// TODO listen for topic?
 	pub.Stop()
 }
 
@@ -84,7 +90,7 @@ func TestConfigPollRate(t *testing.T) {
 	pub.Start()
 
 	cam1 := pub.GetNodeByID(cam1Id)
-	pub.Nodes.SetNodeConfigValues(cam1.Address,
+	pub.UpdateNodeConfigValues(cam1.NodeID,
 		types.NodeAttrMap{types.NodeAttrPollInterval: "654"},
 	)
 
@@ -93,7 +99,7 @@ func TestConfigPollRate(t *testing.T) {
 	assert.Equal(t, 654, pollInterval)
 	time.Sleep(1 * time.Second)
 
-	pub.Nodes.SetNodeConfigValues(cam1.Address,
+	pub.UpdateNodeConfigValues(cam1.NodeID,
 		types.NodeAttrMap{types.NodeAttrPollInterval: "33"},
 	)
 	time.Sleep(1 * time.Second)
@@ -112,6 +118,6 @@ func TestStartStop(t *testing.T) {
 
 	camera := pub.GetNodeByID(cam3Id)
 	assert.NotNil(t, camera) // camera node has to exist
-	time.Sleep(50 * time.Second)
+	time.Sleep(10 * time.Second)
 	pub.Stop()
 }

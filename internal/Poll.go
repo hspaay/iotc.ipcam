@@ -6,16 +6,17 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"path"
 	"time"
 
 	"github.com/iotdomain/iotdomain-go/publisher"
 	"github.com/iotdomain/iotdomain-go/types"
+	"github.com/sirupsen/logrus"
 )
 
 // readCameraImage returns the image downloaded from the URL and the duration to download it.
 func (ipcam *IPCamApp) readImage(url string, login string, password string) ([]byte, time.Duration, error) {
-	logger := ipcam.logger
-	logger.Debugf("readCameraImage: Reading camera image from URL %s", url)
+	logrus.Debugf("readCameraImage: Reading camera image from URL %s", url)
 	startTime := time.Now()
 	var req *http.Request
 	var resp *http.Response
@@ -35,19 +36,19 @@ func (ipcam *IPCamApp) readImage(url string, login string, password string) ([]b
 	}
 	// handle failure to load the image
 	if err != nil {
-		logger.Errorf("readCameraImage: Error opening URL %s: %s", url, err)
+		logrus.Errorf("readCameraImage: Error opening URL %s: %s", url, err)
 		return nil, 0, err
 	}
 	defer resp.Body.Close()
 	// was it a good response?
 	if resp.StatusCode > 299 {
-		logger.Errorf("readCameraImage: Failed opening URL %s: %s", url, resp.Status)
+		logrus.Errorf("readCameraImage: Failed opening URL %s: %s", url, resp.Status)
 		err = errors.New(resp.Status)
 		return nil, 0, err
 	}
 	image, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		logger.Errorf("readCameraImage: Error reading camera image from %s: %s", url, err)
+		logrus.Errorf("readCameraImage: Error reading camera image from %s: %s", url, err)
 		return nil, 0, err
 	}
 	endTime := time.Now()
@@ -55,9 +56,10 @@ func (ipcam *IPCamApp) readImage(url string, login string, password string) ([]b
 	return image, duration, nil
 }
 
-// saveImage save image to file
-func (ipcam *IPCamApp) saveImage(filePath string, image []byte) error {
-	ipcam.logger.Debugf("saveImage: Saving image to file %s", filePath)
+// saveImage save image to the image folder
+func (ipcam *IPCamApp) saveImage(filename string, image []byte) error {
+	filePath := path.Join(ipcam.config.ImageFolder, filename)
+	logrus.Debugf("saveImage: Saving image to file %s", filePath)
 	err := ioutil.WriteFile(filePath, image, 0644)
 	return err
 }
@@ -68,38 +70,37 @@ func (ipcam *IPCamApp) saveImage(filePath string, image []byte) error {
 // Images are publised as a binary array and are unsigned
 func (ipcam *IPCamApp) PollCamera(camera *types.NodeDiscoveryMessage) ([]byte, error) {
 	var err error
-	cameras := ipcam.pub.Nodes
-	camAddr := camera.Address
-	url, _ := cameras.GetNodeConfigString(camAddr, types.NodeAttrURL, "")
-	loginName, _ := cameras.GetNodeConfigString(camAddr, types.NodeAttrLoginName, "")
-	password, _ := cameras.GetNodeConfigString(camAddr, types.NodeAttrPassword, "")
-	ipcam.logger.Infof("pollCamera: Polling Camera %s image from %s", camera.NodeID, url)
+	pub := ipcam.pub
+	url, _ := pub.GetNodeConfigString(camera.NodeID, types.NodeAttrURL, "")
+	loginName, _ := pub.GetNodeConfigString(camera.NodeID, types.NodeAttrLoginName, "")
+	password, _ := pub.GetNodeConfigString(camera.NodeID, types.NodeAttrPassword, "")
+	logrus.Infof("pollCamera: Polling Camera %s image from %s", camera.NodeID, url)
 
 	image, latency, err := ipcam.readImage(url, loginName, password)
 	latencyStr := latency.String()
 
 	if image != nil {
 		//latency3 := math.Round(latency.Seconds()*1000)/1000
-		cameras.SetNodeStatus(camAddr, types.NodeStatusMap{types.NodeStatusLatencyMSec: latencyStr})
-		ipcam.pub.UpdateOutputValue(camera.NodeID, types.OutputTypeLatency, types.DefaultOutputInstance, latencyStr)
+		pub.UpdateNodeStatus(camera.NodeID, types.NodeStatusMap{types.NodeStatusLatencyMSec: latencyStr})
+		pub.UpdateOutputValue(camera.NodeID, types.OutputTypeLatency, types.DefaultOutputInstance, latencyStr)
 
 		// if a filename attribute is defined, save the image to the file
 		// this is a bit of an oddball as this is for local use only, yet a published attribute?
-		filename := cameras.GetNodeAttr(camAddr, types.NodeAttrFilename)
+		filename := pub.GetNodeAttr(camera.NodeID, types.NodeAttrFilename)
 		if filename != "" {
 			err = ipcam.saveImage(filename, image)
 		}
 		//
-		output := ipcam.pub.GetOutputByType(camera.NodeID, types.OutputTypeImage, types.DefaultOutputInstance)
+		output := pub.GetOutput(camera.NodeID, types.OutputTypeImage, types.DefaultOutputInstance)
 		// Dont store the image in memory as it consumes memory unnecesary
 		// Don't sign so the image is directly usable by 3rd party (todo: add signing as config)
-		ipcam.pub.PublishRaw(output, false, image)
+		pub.PublishRaw(output, false, string(image))
 
-		ipcam.pub.SetNodeErrorStatus(camera.NodeID, types.NodeRunStateReady, "")
+		pub.UpdateNodeErrorStatus(camera.NodeID, types.NodeRunStateReady, "")
 	} else {
 		// failed to get image from camera
 		msg := fmt.Sprintf("Unable to get image from camera %s: %s", camera.NodeID, err)
-		ipcam.pub.SetNodeErrorStatus(camera.NodeID, types.NodeRunStateError, msg)
+		pub.UpdateNodeErrorStatus(camera.NodeID, types.NodeRunStateError, msg)
 		err = errors.New(msg)
 	}
 	return image, err
@@ -108,15 +109,15 @@ func (ipcam *IPCamApp) PollCamera(camera *types.NodeDiscoveryMessage) ([]byte, e
 // Poll handler called on a 1 second interval. Each camera node has its own interval.
 func (ipcam *IPCamApp) Poll(pub *publisher.Publisher) {
 	// Each second check which cameras need to be polled and poll
-	cameraList := pub.Nodes
-	for _, camera := range pub.Nodes.GetAllNodes() {
+	cameraList := pub.GetNodes()
+	for _, camera := range cameraList {
 
 		// Each camera can have its own poll interval. The fallback value is the ipcam poll interval
 		pollDelay, _ := ipcam.pollDelay[camera.Address]
 		if pollDelay <= 0 {
-			pollInterval, _ := cameraList.GetNodeConfigInt(camera.Address, types.NodeAttrPollInterval, 600)
+			pollInterval, _ := pub.GetNodeConfigInt(camera.NodeID, types.NodeAttrPollInterval, 600)
 			pollDelay = pollInterval
-			ipcam.logger.Debugf("pollLoop: Polling camera %s at interval of %d seconds", camera.NodeID, pollInterval)
+			logrus.Debugf("pollLoop: Polling camera %s at interval of %d seconds", camera.NodeID, pollInterval)
 			go ipcam.PollCamera(camera)
 		}
 		ipcam.pollDelay[camera.Address] = pollDelay - 1
