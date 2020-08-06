@@ -48,7 +48,7 @@ func (ipcam *IPCamApp) CreateCamerasFromConfig(config *IPCamConfig) {
 	for camID, camInfo := range config.Cameras {
 		// node := pub.GetNodeByID(camID)
 		// if node == nil {
-		pub.NewNode(camID, types.NodeTypeCamera)
+		pub.CreateNode(camID, types.NodeTypeCamera)
 		pub.UpdateNodeAttr(camID, types.NodeAttrMap{
 			types.NodeAttrDescription: camInfo.Description,
 			types.NodeAttrFilename:    camInfo.Filename,
@@ -80,8 +80,8 @@ func (ipcam *IPCamApp) CreateCamerasFromConfig(config *IPCamConfig) {
 			Max:         3600,
 		})
 		// the image and camera latency are both outputs
-		pub.NewOutput(camID, types.OutputTypeImage, types.DefaultOutputInstance)
-		pub.NewOutput(camID, types.OutputTypeLatency, types.DefaultOutputInstance)
+		pub.CreateOutput(camID, types.OutputTypeImage, types.DefaultOutputInstance)
+		pub.CreateOutput(camID, types.OutputTypeLatency, types.DefaultOutputInstance)
 	}
 
 }

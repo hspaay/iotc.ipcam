@@ -1,0 +1,193 @@
+[
+  {
+    "address": "test/ipcam/Snowshed-east/$node",
+    "attr": {
+      "description": "Coquahalla Highway 5 Snowshed",
+      "pollInterval": "33"
+    },
+    "config": {
+      "loginName": {
+        "datatype": "string",
+        "default": "test",
+        "description": "Camera login name",
+        "secret": true
+      },
+      "name": {
+        "datatype": "string",
+        "description": "Human friendly node name"
+      },
+      "password": {
+        "datatype": "string",
+        "default": "test",
+        "description": "Camera password",
+        "secret": true
+      },
+      "pollInterval": {
+        "datatype": "int",
+        "default": "600",
+        "description": "Camera poll interval in seconds",
+        "max": 3600,
+        "min": 5
+      },
+      "publishEvent": {
+        "datatype": "string",
+        "default": "false",
+        "description": "Enable publishing outputs as event"
+      },
+      "publishHistory": {
+        "datatype": "boolean",
+        "default": "true",
+        "description": "Enable publishing output history"
+      },
+      "publishLatest": {
+        "datatype": "boolean",
+        "default": "true",
+        "description": "Enable publishing latest output"
+      },
+      "publishRaw": {
+        "datatype": "boolean",
+        "default": "true",
+        "description": "Enable publishing raw outputs"
+      },
+      "url": {
+        "datatype": "string",
+        "default": "http://images.drivebc.ca/bchighwaycam/pub/cameras/2.jpg",
+        "description": "Camera URL, for example http://images.drivebc.ca/bchighwaycam/pub/cameras/2.jpg"
+      }
+    },
+    "deviceid": "Snowshed-east",
+    "nodeid": "Snowshed-east",
+    "nodeType": "camera",
+    "status": {
+      "latencymsec": "94ms",
+      "runState": "ready"
+    },
+    "timestamp": "2020-08-05T21:54:39.696-0700"
+  },
+  {
+    "address": "test/ipcam/LaSilla/$node",
+    "attr": {
+      "description": "ESO La Silla Sky Camera",
+      "filename": "lasilla-snapshot.jpg"
+    },
+    "config": {
+      "loginName": {
+        "datatype": "string",
+        "description": "Camera login name",
+        "secret": true
+      },
+      "name": {
+        "datatype": "string",
+        "description": "Human friendly node name"
+      },
+      "password": {
+        "datatype": "string",
+        "description": "Camera password",
+        "secret": true
+      },
+      "pollInterval": {
+        "datatype": "int",
+        "default": "654",
+        "description": "Camera poll interval in seconds",
+        "max": 3600,
+        "min": 5
+      },
+      "publishEvent": {
+        "datatype": "string",
+        "default": "false",
+        "description": "Enable publishing outputs as event"
+      },
+      "publishHistory": {
+        "datatype": "boolean",
+        "default": "true",
+        "description": "Enable publishing output history"
+      },
+      "publishLatest": {
+        "datatype": "boolean",
+        "default": "true",
+        "description": "Enable publishing latest output"
+      },
+      "publishRaw": {
+        "datatype": "boolean",
+        "default": "true",
+        "description": "Enable publishing raw outputs"
+      },
+      "url": {
+        "datatype": "string",
+        "default": "http://www.ls.eso.org/lasilla/dimm/lasc/gifs/last.gif",
+        "description": "Camera URL, for example http://images.drivebc.ca/bchighwaycam/pub/cameras/2.jpg"
+      }
+    },
+    "deviceid": "LaSilla",
+    "nodeid": "LaSilla",
+    "nodeType": "camera",
+    "status": {
+      "latencymsec": "2.108s",
+      "runState": "ready"
+    },
+    "timestamp": "2020-08-05T21:54:41.709-0700"
+  },
+  {
+    "address": "test/ipcam/Kelowna/$node",
+    "attr": {
+      "description": "Kelowna Bennet Bridge",
+      "filename": "kelowna-snapshot.jpg"
+    },
+    "config": {
+      "loginName": {
+        "datatype": "string",
+        "description": "Camera login name",
+        "secret": true
+      },
+      "name": {
+        "datatype": "string",
+        "description": "Human friendly node name"
+      },
+      "password": {
+        "datatype": "string",
+        "description": "Camera password",
+        "secret": true
+      },
+      "pollInterval": {
+        "datatype": "int",
+        "default": "600",
+        "description": "Camera poll interval in seconds",
+        "max": 3600,
+        "min": 5
+      },
+      "publishEvent": {
+        "datatype": "string",
+        "default": "false",
+        "description": "Enable publishing outputs as event"
+      },
+      "publishHistory": {
+        "datatype": "boolean",
+        "default": "true",
+        "description": "Enable publishing output history"
+      },
+      "publishLatest": {
+        "datatype": "boolean",
+        "default": "true",
+        "description": "Enable publishing latest output"
+      },
+      "publishRaw": {
+        "datatype": "boolean",
+        "default": "true",
+        "description": "Enable publishing raw outputs"
+      },
+      "url": {
+        "datatype": "string",
+        "default": "http://images.drivebc.ca/bchighwaycam/pub/cameras/127.jpg",
+        "description": "Camera URL, for example http://images.drivebc.ca/bchighwaycam/pub/cameras/2.jpg"
+      }
+    },
+    "deviceid": "Kelowna",
+    "nodeid": "Kelowna",
+    "nodeType": "camera",
+    "status": {
+      "latencymsec": "117ms",
+      "runState": "ready"
+    },
+    "timestamp": "2020-08-05T21:54:39.719-0700"
+  }
+]

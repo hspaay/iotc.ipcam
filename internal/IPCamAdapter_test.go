@@ -28,7 +28,7 @@ func TestLoadConfig(t *testing.T) {
 	NewIPCamApp(appConfig, pub)
 
 	// the snowshed camera has an output with image sensor configured
-	camera := pub.GetNodeByID(cam1Id)
+	camera := pub.GetNodeByDeviceID(cam1Id)
 	require.NotNil(t, camera)
 	assert.Equal(t, cam1Id, camera.NodeID, "Incorrect name for camera")
 
@@ -59,7 +59,7 @@ func TestPollCamera(t *testing.T) {
 	os.Remove(cam3File)
 	pub.Start()
 
-	camera := pub.GetNodeByID(cam1Id)
+	camera := pub.GetNodeByDeviceID(cam1Id)
 	assert.NotNil(t, camera) // camera node has to exist
 	// the snowshed camera has an image sensor configured, required for publishing the camera during poll
 	image, err := ipcam.PollCamera(camera)
@@ -77,7 +77,9 @@ func TestPollCamera(t *testing.T) {
 	assert.NotNil(t, output) // camera node has to exist
 	assert.Equal(t, types.OutputTypeImage, output.OutputType, "Incorrect camera output type")
 
-	assert.FileExists(t, cam3File, "Image not save to file %s", cam3File)
+	// can take a second before files are written from the heartbeat loop
+	time.Sleep(time.Second)
+	assert.FileExists(t, cam3File, "Image not saved to file %s", cam3File)
 
 	// TODO listen for topic?
 	pub.Stop()
@@ -89,7 +91,7 @@ func TestConfigPollRate(t *testing.T) {
 	_ = NewIPCamApp(appConfig, pub)
 	pub.Start()
 
-	cam1 := pub.GetNodeByID(cam1Id)
+	cam1 := pub.GetNodeByDeviceID(cam1Id)
 	pub.UpdateNodeConfigValues(cam1.NodeID,
 		types.NodeAttrMap{types.NodeAttrPollInterval: "654"},
 	)
@@ -116,7 +118,7 @@ func TestStartStop(t *testing.T) {
 
 	pub.Start()
 
-	camera := pub.GetNodeByID(cam3Id)
+	camera := pub.GetNodeByDeviceID(cam3Id)
 	assert.NotNil(t, camera) // camera node has to exist
 	time.Sleep(10 * time.Second)
 	pub.Stop()

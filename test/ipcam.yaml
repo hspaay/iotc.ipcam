@@ -1,7 +1,9 @@
-# Publisher configuration options
-# Optional parameters are commented out and shown with their default value
+# Optional publisher configuration options
+#publisherId: "ipcam2"
+loglevel: "info"
+#logfile: "../test/ipcam.log"
 
-publisherId: "ipcam2"
+# ipcam parameters
 imageFolder: "../test"
 
 # Quick setup of cameras
