@@ -11,7 +11,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-const cacheFolder = "../test/cache"
 const configFolder = "../test"
 
 //const TmpKelowna1Jpg = "/tmp/kelowna1.jpg"
@@ -23,9 +22,9 @@ const cam3File = "../test/kelowna-snapshot.jpg"
 var appConfig *IPCamConfig = &IPCamConfig{}
 
 func TestLoadConfig(t *testing.T) {
-	pub, err := publisher.NewAppPublisher(AppID, configFolder, cacheFolder, appConfig, false)
+	pub, err := publisher.NewAppPublisher(AppID, configFolder, appConfig, false)
 	assert.NoError(t, err)
-	NewIPCamApp(appConfig, pub)
+	app := NewIPCamApp(appConfig, pub)
 
 	// the snowshed camera has an output with image sensor configured
 	camera := pub.GetNodeByDeviceID(cam1Id)
@@ -34,11 +33,14 @@ func TestLoadConfig(t *testing.T) {
 
 	output := pub.GetOutput(cam1Id, types.OutputTypeImage, types.DefaultOutputInstance)
 	require.NotNil(t, output, "Missing output for camera image")
+
+	// for coverage ...
+	app.HandleConfigCommand("someaddress", nil)
 }
 
 // TestReadCamera test reading camera image from remote location
 func TestReadCamera(t *testing.T) {
-	pub, _ := publisher.NewAppPublisher(AppID, configFolder, cacheFolder, appConfig, false)
+	pub, _ := publisher.NewAppPublisher(AppID, configFolder, appConfig, false)
 	ipcam := NewIPCamApp(appConfig, pub)
 
 	camURL, _ := pub.GetNodeConfigString(cam1Id, types.NodeAttrURL, "") //
@@ -52,7 +54,7 @@ func TestReadCamera(t *testing.T) {
 
 // TestPollCamera which polls the first camera image in the config and publishes the result
 func TestPollCamera(t *testing.T) {
-	pub, err := publisher.NewAppPublisher(AppID, configFolder, cacheFolder, appConfig, false)
+	pub, err := publisher.NewAppPublisher(AppID, configFolder, appConfig, false)
 	assert.NoError(t, err, "Failed to create ipcam publisher")
 	ipcam := NewIPCamApp(appConfig, pub)
 
@@ -83,11 +85,18 @@ func TestPollCamera(t *testing.T) {
 
 	// TODO listen for topic?
 	pub.Stop()
+
+	// error case - poll invalid url
+	pub.UpdateNodeConfigValues(camera.DeviceID, types.NodeAttrMap{
+		types.NodeAttrURL: "http://localhost/badurl.jpg",
+	})
+	_, err = ipcam.PollCamera(camera)
+	assert.Error(t, err)
 }
 
 // Test updating of the poll rate on cam2
 func TestConfigPollRate(t *testing.T) {
-	pub, _ := publisher.NewAppPublisher(AppID, configFolder, cacheFolder, appConfig, false)
+	pub, _ := publisher.NewAppPublisher(AppID, configFolder, appConfig, false)
 	_ = NewIPCamApp(appConfig, pub)
 	pub.Start()
 
@@ -113,7 +122,7 @@ func TestConfigPollRate(t *testing.T) {
 
 // TestStartStop of the ipcam
 func TestStartStop(t *testing.T) {
-	pub, _ := publisher.NewAppPublisher(AppID, configFolder, cacheFolder, appConfig, false)
+	pub, _ := publisher.NewAppPublisher(AppID, configFolder, appConfig, false)
 	NewIPCamApp(appConfig, pub)
 
 	pub.Start()
