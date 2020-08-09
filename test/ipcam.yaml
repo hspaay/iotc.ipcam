@@ -2,6 +2,11 @@
 #publisherId: "ipcam2"
 loglevel: "info"
 #logfile: "../test/ipcam.log"
+#disableInputs: false
+#disableConfig: false
+#securedDomain: false
+#disablePublishers: false disable publisher discovery
+
 
 # ipcam parameters
 imageFolder: "../test"

@@ -31,7 +31,7 @@ func TestLoadConfig(t *testing.T) {
 	require.NotNil(t, camera)
 	assert.Equal(t, cam1Id, camera.NodeID, "Incorrect name for camera")
 
-	output := pub.GetOutput(cam1Id, types.OutputTypeImage, types.DefaultOutputInstance)
+	output := pub.GetOutputByDevice(cam1Id, types.OutputTypeImage, types.DefaultOutputInstance)
 	require.NotNil(t, output, "Missing output for camera image")
 
 	// for coverage ...
@@ -69,13 +69,13 @@ func TestPollCamera(t *testing.T) {
 	assert.NoError(t, err)
 
 	// after polling the camera, its latency attribute must have been updated
-	latencyValue := pub.GetOutputValue(
+	latencyValue := pub.GetOutputValueByDevice(
 		camera.NodeID, types.OutputTypeLatency, types.DefaultOutputInstance)
 	if assert.NotNil(t, latencyValue, "No output value for latency on node %s", camera.Address) {
 		assert.NotZero(t, latencyValue.Value, "No latency in polling camera")
 	}
 
-	output := pub.GetOutput(cam1Id, types.OutputTypeImage, types.DefaultOutputInstance)
+	output := pub.GetOutputByDevice(cam1Id, types.OutputTypeImage, types.DefaultOutputInstance)
 	assert.NotNil(t, output) // camera node has to exist
 	assert.Equal(t, types.OutputTypeImage, output.OutputType, "Incorrect camera output type")
 

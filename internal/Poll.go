@@ -56,6 +56,11 @@ func (ipcam *IPCamApp) readImage(url string, login string, password string) ([]b
 	return image, duration, nil
 }
 
+// not using the library's input from http yet
+func (ipcam *IPCamApp) handleInputMessage(input *types.InputDiscoveryMessage, sender string, value string) {
+	logrus.Infof("handleInputMessage")
+}
+
 // saveImage save image to the image folder
 func (ipcam *IPCamApp) saveImage(filename string, image []byte) error {
 	filePath := path.Join(ipcam.config.ImageFolder, filename)
@@ -91,7 +96,7 @@ func (ipcam *IPCamApp) PollCamera(camera *types.NodeDiscoveryMessage) ([]byte, e
 			err = ipcam.saveImage(filename, image)
 		}
 		//
-		output := pub.GetOutput(camera.NodeID, types.OutputTypeImage, types.DefaultOutputInstance)
+		output := pub.GetOutputByDevice(camera.NodeID, types.OutputTypeImage, types.DefaultOutputInstance)
 		// Dont store the image in memory as it consumes memory unnecesary
 		// Don't sign so the image is directly usable by 3rd party (todo: add signing as config)
 		pub.PublishRaw(output, false, string(image))

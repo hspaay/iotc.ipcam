@@ -82,6 +82,9 @@ func (ipcam *IPCamApp) CreateCamerasFromConfig(config *IPCamConfig) {
 		// the image and camera latency are both outputs
 		pub.CreateOutput(camID, types.OutputTypeImage, types.DefaultOutputInstance)
 		pub.CreateOutput(camID, types.OutputTypeLatency, types.DefaultOutputInstance)
+
+		pub.CreateInputFromHTTP(camID, types.InputTypeImage, types.DefaultInputInstance,
+			camInfo.URL, camInfo.LoginName, camInfo.Password, camInfo.PollInterval, ipcam.handleInputMessage)
 	}
 
 }

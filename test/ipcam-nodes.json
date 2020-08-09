@@ -1,70 +1,5 @@
 [
   {
-    "address": "test/ipcam/Snowshed-east/$node",
-    "attr": {
-      "description": "Coquahalla Highway 5 Snowshed",
-      "pollInterval": "33"
-    },
-    "config": {
-      "loginName": {
-        "datatype": "string",
-        "default": "test",
-        "description": "Camera login name",
-        "secret": true
-      },
-      "name": {
-        "datatype": "string",
-        "description": "Human friendly node name"
-      },
-      "password": {
-        "datatype": "string",
-        "default": "test",
-        "description": "Camera password",
-        "secret": true
-      },
-      "pollInterval": {
-        "datatype": "int",
-        "default": "600",
-        "description": "Camera poll interval in seconds",
-        "max": 3600,
-        "min": 5
-      },
-      "publishEvent": {
-        "datatype": "string",
-        "default": "false",
-        "description": "Enable publishing outputs as event"
-      },
-      "publishHistory": {
-        "datatype": "boolean",
-        "default": "true",
-        "description": "Enable publishing output history"
-      },
-      "publishLatest": {
-        "datatype": "boolean",
-        "default": "true",
-        "description": "Enable publishing latest output"
-      },
-      "publishRaw": {
-        "datatype": "boolean",
-        "default": "true",
-        "description": "Enable publishing raw outputs"
-      },
-      "url": {
-        "datatype": "string",
-        "default": "http://images.drivebc.ca/bchighwaycam/pub/cameras/2.jpg",
-        "description": "Camera URL, for example http://images.drivebc.ca/bchighwaycam/pub/cameras/2.jpg"
-      }
-    },
-    "deviceid": "Snowshed-east",
-    "nodeid": "Snowshed-east",
-    "nodeType": "camera",
-    "status": {
-      "latencymsec": "94ms",
-      "runState": "ready"
-    },
-    "timestamp": "2020-08-05T21:54:39.696-0700"
-  },
-  {
     "address": "test/ipcam/LaSilla/$node",
     "attr": {
       "description": "ESO La Silla Sky Camera",
@@ -122,10 +57,10 @@
     "nodeid": "LaSilla",
     "nodeType": "camera",
     "status": {
-      "latencymsec": "2.108s",
+      "latencymsec": "1.062s",
       "runState": "ready"
     },
-    "timestamp": "2020-08-05T21:54:41.709-0700"
+    "timestamp": "2020-08-08T22:57:40.062-0700"
   },
   {
     "address": "test/ipcam/Kelowna/$node",
@@ -185,9 +120,74 @@
     "nodeid": "Kelowna",
     "nodeType": "camera",
     "status": {
-      "latencymsec": "117ms",
+      "latencymsec": "99ms",
       "runState": "ready"
     },
-    "timestamp": "2020-08-05T21:54:39.719-0700"
+    "timestamp": "2020-08-08T22:57:39.099-0700"
+  },
+  {
+    "address": "test/ipcam/Snowshed-east/$node",
+    "attr": {
+      "description": "Coquahalla Highway 5 Snowshed",
+      "pollInterval": "33"
+    },
+    "config": {
+      "loginName": {
+        "datatype": "string",
+        "default": "test",
+        "description": "Camera login name",
+        "secret": true
+      },
+      "name": {
+        "datatype": "string",
+        "description": "Human friendly node name"
+      },
+      "password": {
+        "datatype": "string",
+        "default": "test",
+        "description": "Camera password",
+        "secret": true
+      },
+      "pollInterval": {
+        "datatype": "int",
+        "default": "600",
+        "description": "Camera poll interval in seconds",
+        "max": 3600,
+        "min": 5
+      },
+      "publishEvent": {
+        "datatype": "string",
+        "default": "false",
+        "description": "Enable publishing outputs as event"
+      },
+      "publishHistory": {
+        "datatype": "boolean",
+        "default": "true",
+        "description": "Enable publishing output history"
+      },
+      "publishLatest": {
+        "datatype": "boolean",
+        "default": "true",
+        "description": "Enable publishing latest output"
+      },
+      "publishRaw": {
+        "datatype": "boolean",
+        "default": "true",
+        "description": "Enable publishing raw outputs"
+      },
+      "url": {
+        "datatype": "string",
+        "default": "http://images.drivebc.ca/bchighwaycam/pub/cameras/2.jpg",
+        "description": "Camera URL, for example http://images.drivebc.ca/bchighwaycam/pub/cameras/2.jpg"
+      }
+    },
+    "deviceid": "Snowshed-east",
+    "nodeid": "Snowshed-east",
+    "nodeType": "camera",
+    "status": {
+      "latencymsec": "257ms",
+      "runState": "ready"
+    },
+    "timestamp": "2020-08-08T22:57:39.257-0700"
   }
 ]
