@@ -70,7 +70,7 @@ func (ipcam *IPCamApp) saveImage(filename string, image []byte) error {
 }
 
 // PollCamera and publish image.
-// If the camera device doesn't have an image output it is added.
+// If the camera doesn't have an image output it is added.
 // If a filename property is configured then save the camera image to the file
 // Images are publised as a binary array and are unsigned
 func (ipcam *IPCamApp) PollCamera(camera *types.NodeDiscoveryMessage) ([]byte, error) {
@@ -86,7 +86,7 @@ func (ipcam *IPCamApp) PollCamera(camera *types.NodeDiscoveryMessage) ([]byte, e
 
 	if image != nil {
 		//latency3 := math.Round(latency.Seconds()*1000)/1000
-		pub.UpdateNodeStatus(camera.NodeID, types.NodeStatusMap{types.NodeStatusLatencyMSec: latencyStr})
+		pub.UpdateNodeStatus(camera.NodeID, types.NodeStatusMap{types.NodeStatusAttrLatencyMSec: latencyStr})
 		pub.UpdateOutputValue(camera.NodeID, types.OutputTypeLatency, types.DefaultOutputInstance, latencyStr)
 
 		// if a filename attribute is defined, save the image to the file
@@ -96,16 +96,16 @@ func (ipcam *IPCamApp) PollCamera(camera *types.NodeDiscoveryMessage) ([]byte, e
 			err = ipcam.saveImage(filename, image)
 		}
 		//
-		output := pub.GetOutputByDevice(camera.NodeID, types.OutputTypeImage, types.DefaultOutputInstance)
+		output := pub.GetOutputByNodeHWID(camera.NodeID, types.OutputTypeImage, types.DefaultOutputInstance)
 		// Dont store the image in memory as it consumes memory unnecesary
 		// Don't sign so the image is directly usable by 3rd party (todo: add signing as config)
 		pub.PublishRaw(output, false, string(image))
 
-		pub.UpdateNodeErrorStatus(camera.NodeID, types.NodeRunStateReady, "")
+		pub.UpdateNodeErrorStatus(camera.NodeID, types.NodeStateReady, "")
 	} else {
 		// failed to get image from camera
 		msg := fmt.Sprintf("Unable to get image from camera %s: %s", camera.NodeID, err)
-		pub.UpdateNodeErrorStatus(camera.NodeID, types.NodeRunStateError, msg)
+		pub.UpdateNodeErrorStatus(camera.NodeID, types.NodeStateError, msg)
 		err = errors.New(msg)
 	}
 	return image, err

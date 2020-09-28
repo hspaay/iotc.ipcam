@@ -27,11 +27,11 @@ func TestLoadConfig(t *testing.T) {
 	app := NewIPCamApp(appConfig, pub)
 
 	// the snowshed camera has an output with image sensor configured
-	camera := pub.GetNodeByDeviceID(cam1Id)
+	camera := pub.GetNodeByHWID(cam1Id)
 	require.NotNil(t, camera)
 	assert.Equal(t, cam1Id, camera.NodeID, "Incorrect name for camera")
 
-	output := pub.GetOutputByDevice(cam1Id, types.OutputTypeImage, types.DefaultOutputInstance)
+	output := pub.GetOutputByNodeHWID(cam1Id, types.OutputTypeImage, types.DefaultOutputInstance)
 	require.NotNil(t, output, "Missing output for camera image")
 
 	// for coverage ...
@@ -61,7 +61,7 @@ func TestPollCamera(t *testing.T) {
 	os.Remove(cam3File)
 	pub.Start()
 
-	camera := pub.GetNodeByDeviceID(cam1Id)
+	camera := pub.GetNodeByHWID(cam1Id)
 	assert.NotNil(t, camera) // camera node has to exist
 	// the snowshed camera has an image sensor configured, required for publishing the camera during poll
 	image, err := ipcam.PollCamera(camera)
@@ -69,13 +69,13 @@ func TestPollCamera(t *testing.T) {
 	assert.NoError(t, err)
 
 	// after polling the camera, its latency attribute must have been updated
-	latencyValue := pub.GetOutputValueByDevice(
+	latencyValue := pub.GetOutputValueByNodeHWID(
 		camera.NodeID, types.OutputTypeLatency, types.DefaultOutputInstance)
 	if assert.NotNil(t, latencyValue, "No output value for latency on node %s", camera.Address) {
 		assert.NotZero(t, latencyValue.Value, "No latency in polling camera")
 	}
 
-	output := pub.GetOutputByDevice(cam1Id, types.OutputTypeImage, types.DefaultOutputInstance)
+	output := pub.GetOutputByNodeHWID(cam1Id, types.OutputTypeImage, types.DefaultOutputInstance)
 	assert.NotNil(t, output) // camera node has to exist
 	assert.Equal(t, types.OutputTypeImage, output.OutputType, "Incorrect camera output type")
 
@@ -87,7 +87,7 @@ func TestPollCamera(t *testing.T) {
 	pub.Stop()
 
 	// error case - poll invalid url
-	pub.UpdateNodeConfigValues(camera.DeviceID, types.NodeAttrMap{
+	pub.UpdateNodeConfigValues(camera.HWID, types.NodeAttrMap{
 		types.NodeAttrURL: "http://localhost/badurl.jpg",
 	})
 	_, err = ipcam.PollCamera(camera)
@@ -100,7 +100,7 @@ func TestConfigPollRate(t *testing.T) {
 	_ = NewIPCamApp(appConfig, pub)
 	pub.Start()
 
-	cam1 := pub.GetNodeByDeviceID(cam1Id)
+	cam1 := pub.GetNodeByHWID(cam1Id)
 	pub.UpdateNodeConfigValues(cam1.NodeID,
 		types.NodeAttrMap{types.NodeAttrPollInterval: "654"},
 	)
@@ -127,7 +127,7 @@ func TestStartStop(t *testing.T) {
 
 	pub.Start()
 
-	camera := pub.GetNodeByDeviceID(cam3Id)
+	camera := pub.GetNodeByHWID(cam3Id)
 	assert.NotNil(t, camera) // camera node has to exist
 	time.Sleep(10 * time.Second)
 	pub.Stop()

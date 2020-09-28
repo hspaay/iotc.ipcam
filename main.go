@@ -1,6 +1,6 @@
 package main
 
-import "ipcam/internal"
+import "./internal"
 
 func main() {
 	internal.Run()
