@@ -22,7 +22,7 @@ const cam3File = "../test/kelowna-snapshot.jpg"
 var appConfig *IPCamConfig = &IPCamConfig{}
 
 func TestLoadConfig(t *testing.T) {
-	pub, err := publisher.NewAppPublisher(AppID, configFolder, appConfig, false)
+	pub, err := publisher.NewAppPublisher(AppID, configFolder, appConfig, "", false)
 	assert.NoError(t, err)
 	app := NewIPCamApp(appConfig, pub)
 
@@ -40,7 +40,7 @@ func TestLoadConfig(t *testing.T) {
 
 // TestReadCamera test reading camera image from remote location
 func TestReadCamera(t *testing.T) {
-	pub, _ := publisher.NewAppPublisher(AppID, configFolder, appConfig, false)
+	pub, _ := publisher.NewAppPublisher(AppID, configFolder, appConfig, "", false)
 	ipcam := NewIPCamApp(appConfig, pub)
 
 	camURL, _ := pub.GetNodeConfigString(cam1Id, types.NodeAttrURL, "") //
@@ -54,7 +54,7 @@ func TestReadCamera(t *testing.T) {
 
 // TestPollCamera which polls the first camera image in the config and publishes the result
 func TestPollCamera(t *testing.T) {
-	pub, err := publisher.NewAppPublisher(AppID, configFolder, appConfig, false)
+	pub, err := publisher.NewAppPublisher(AppID, configFolder, appConfig, "", false)
 	assert.NoError(t, err, "Failed to create ipcam publisher")
 	ipcam := NewIPCamApp(appConfig, pub)
 
@@ -96,7 +96,7 @@ func TestPollCamera(t *testing.T) {
 
 // Test updating of the poll rate on cam2
 func TestConfigPollRate(t *testing.T) {
-	pub, _ := publisher.NewAppPublisher(AppID, configFolder, appConfig, false)
+	pub, _ := publisher.NewAppPublisher(AppID, configFolder, appConfig, "", false)
 	_ = NewIPCamApp(appConfig, pub)
 	pub.Start()
 
@@ -122,7 +122,7 @@ func TestConfigPollRate(t *testing.T) {
 
 // TestStartStop of the ipcam
 func TestStartStop(t *testing.T) {
-	pub, _ := publisher.NewAppPublisher(AppID, configFolder, appConfig, false)
+	pub, _ := publisher.NewAppPublisher(AppID, configFolder, appConfig, "", false)
 	NewIPCamApp(appConfig, pub)
 
 	pub.Start()

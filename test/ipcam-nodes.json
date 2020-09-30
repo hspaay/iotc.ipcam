@@ -1,5 +1,69 @@
 [
   {
+    "address": "test/ipcam/LaSilla/$node",
+    "attr": {
+      "description": "ESO La Silla Sky Camera",
+      "filename": "lasilla-snapshot.jpg",
+      "type": "camera"
+    },
+    "config": {
+      "loginName": {
+        "datatype": "string",
+        "description": "Camera login name",
+        "secret": true
+      },
+      "name": {
+        "datatype": "string",
+        "description": "Human friendly node name"
+      },
+      "password": {
+        "datatype": "string",
+        "description": "Camera password",
+        "secret": true
+      },
+      "pollInterval": {
+        "datatype": "int",
+        "default": "654",
+        "description": "Camera poll interval in seconds",
+        "max": 3600,
+        "min": 5
+      },
+      "publishEvent": {
+        "datatype": "string",
+        "default": "false",
+        "description": "Enable publishing outputs as event"
+      },
+      "publishHistory": {
+        "datatype": "boolean",
+        "default": "true",
+        "description": "Enable publishing output history"
+      },
+      "publishLatest": {
+        "datatype": "boolean",
+        "default": "true",
+        "description": "Enable publishing latest output"
+      },
+      "publishRaw": {
+        "datatype": "boolean",
+        "default": "true",
+        "description": "Enable publishing raw outputs"
+      },
+      "url": {
+        "datatype": "string",
+        "default": "http://www.ls.eso.org/lasilla/dimm/lasc/gifs/last.gif",
+        "description": "Camera URL, for example http://images.drivebc.ca/bchighwaycam/pub/cameras/2.jpg"
+      }
+    },
+    "hwID": "LaSilla",
+    "nodeId": "LaSilla",
+    "status": {
+      "latencymsec": "1.73s",
+      "runState": "ready",
+      "state": "ready"
+    },
+    "timestamp": "2020-09-30T10:33:41.794-0700"
+  },
+  {
     "address": "test/ipcam/Kelowna/$node",
     "attr": {
       "description": "Kelowna Bennet Bridge",
@@ -57,10 +121,11 @@
     "hwID": "Kelowna",
     "nodeId": "Kelowna",
     "status": {
-      "latencymsec": "89ms",
+      "latencymsec": "246ms",
+      "runState": "ready",
       "state": "ready"
     },
-    "timestamp": "2020-09-27T22:58:59.548-0700"
+    "timestamp": "2020-09-30T10:33:40.310-0700"
   },
   {
     "address": "test/ipcam/Snowshed-east/$node",
@@ -122,72 +187,10 @@
     "hwID": "Snowshed-east",
     "nodeId": "Snowshed-east",
     "status": {
-      "latencymsec": "106ms",
+      "latencymsec": "237ms",
+      "runState": "ready",
       "state": "ready"
     },
-    "timestamp": "2020-09-27T22:58:59.565-0700"
-  },
-  {
-    "address": "test/ipcam/LaSilla/$node",
-    "attr": {
-      "description": "ESO La Silla Sky Camera",
-      "filename": "lasilla-snapshot.jpg",
-      "type": "camera"
-    },
-    "config": {
-      "loginName": {
-        "datatype": "string",
-        "description": "Camera login name",
-        "secret": true
-      },
-      "name": {
-        "datatype": "string",
-        "description": "Human friendly node name"
-      },
-      "password": {
-        "datatype": "string",
-        "description": "Camera password",
-        "secret": true
-      },
-      "pollInterval": {
-        "datatype": "int",
-        "default": "654",
-        "description": "Camera poll interval in seconds",
-        "max": 3600,
-        "min": 5
-      },
-      "publishEvent": {
-        "datatype": "string",
-        "default": "false",
-        "description": "Enable publishing outputs as event"
-      },
-      "publishHistory": {
-        "datatype": "boolean",
-        "default": "true",
-        "description": "Enable publishing output history"
-      },
-      "publishLatest": {
-        "datatype": "boolean",
-        "default": "true",
-        "description": "Enable publishing latest output"
-      },
-      "publishRaw": {
-        "datatype": "boolean",
-        "default": "true",
-        "description": "Enable publishing raw outputs"
-      },
-      "url": {
-        "datatype": "string",
-        "default": "http://www.ls.eso.org/lasilla/dimm/lasc/gifs/last.gif",
-        "description": "Camera URL, for example http://images.drivebc.ca/bchighwaycam/pub/cameras/2.jpg"
-      }
-    },
-    "hwID": "LaSilla",
-    "nodeId": "LaSilla",
-    "status": {
-      "latencymsec": "1.235s",
-      "state": "ready"
-    },
-    "timestamp": "2020-09-27T22:59:00.695-0700"
+    "timestamp": "2020-09-30T10:33:40.302-0700"
   }
 ]

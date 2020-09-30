@@ -7,7 +7,7 @@ import (
 )
 
 // HandleConfigCommand handles requests to update node configuration
-func (app *IPCamApp) HandleConfigCommand(address string, config types.NodeAttrMap) types.NodeAttrMap {
-	logrus.Infof("IPCamApp.HandleConfigCommand for %s. Accepting config.", address)
-	return config
+func (app *IPCamApp) HandleConfigCommand(nodeHWID string, config types.NodeAttrMap) {
+	logrus.Infof("IPCamApp.HandleConfigCommand for node %s. Accepting config.", nodeHWID)
+	app.pub.UpdateNodeConfigValues(nodeHWID, config)
 }

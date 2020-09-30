@@ -86,7 +86,7 @@ func (ipcam *IPCamApp) PollCamera(camera *types.NodeDiscoveryMessage) ([]byte, e
 
 	if image != nil {
 		//latency3 := math.Round(latency.Seconds()*1000)/1000
-		pub.UpdateNodeStatus(camera.NodeID, types.NodeStatusMap{types.NodeStatusAttrLatencyMSec: latencyStr})
+		pub.UpdateNodeStatus(camera.NodeID, types.NodeStatusMap{types.NodeStatusLatencyMSec: latencyStr})
 		pub.UpdateOutputValue(camera.NodeID, types.OutputTypeLatency, types.DefaultOutputInstance, latencyStr)
 
 		// if a filename attribute is defined, save the image to the file
@@ -101,11 +101,11 @@ func (ipcam *IPCamApp) PollCamera(camera *types.NodeDiscoveryMessage) ([]byte, e
 		// Don't sign so the image is directly usable by 3rd party (todo: add signing as config)
 		pub.PublishRaw(output, false, string(image))
 
-		pub.UpdateNodeErrorStatus(camera.NodeID, types.NodeStateReady, "")
+		pub.UpdateNodeErrorStatus(camera.NodeID, types.NodeRunStateReady, "")
 	} else {
 		// failed to get image from camera
 		msg := fmt.Sprintf("Unable to get image from camera %s: %s", camera.NodeID, err)
-		pub.UpdateNodeErrorStatus(camera.NodeID, types.NodeStateError, msg)
+		pub.UpdateNodeErrorStatus(camera.NodeID, types.NodeRunStateError, msg)
 		err = errors.New(msg)
 	}
 	return image, err

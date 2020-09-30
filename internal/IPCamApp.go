@@ -112,7 +112,7 @@ func NewIPCamApp(config *IPCamConfig, pub *publisher.Publisher) *IPCamApp {
 // Run the publisher until the SIGTERM  or SIGINT signal is received
 func Run() {
 	appConfig := &IPCamConfig{PublisherID: AppID}
-	pub, _ := publisher.NewAppPublisher(AppID, "", appConfig, true)
+	pub, _ := publisher.NewAppPublisher(AppID, "", appConfig, "", true)
 
 	app := NewIPCamApp(appConfig, pub)
 	_ = app
